@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Table du Vallon — table contemporaine dans le Lavaux. Démonstration réalisée par Wahl BI Consulting.">
+<link rel="icon" href="data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'><text%20y='.9em'%20font-size='90'>🍽️</text></svg>">
+<title>Table du Vallon — Table contemporaine · Lavaux</title>
+<style>
+  /* ============================================================
+     TABLE DU VALLON — site de démonstration (fictif)
+     Élégance nocturne : charbon profond · braise cuivrée · blanc os
+     Thème sombre assumé (salle à la bougie) — pas de mode clair.
+     ============================================================ */
+
+  :root{
+    --ink:      #0B0908;   /* fond le plus profond, noir chaud */
+    --char:     #16110C;   /* panneau charbon */
+    --char-2:   #211A12;   /* charbon surélevé */
+    --char-3:   #2C2318;   /* bord / relief */
+    --bone:     #ECE3D0;   /* blanc os, texte principal */
+    --bone-dim: #A9997F;   /* taupe chaud, texte secondaire */
+    --copper:   #C97E45;   /* braise cuivrée, accent */
+    --ember:    #E8AC6C;   /* braise vive, lueur / survol */
+    --line:     rgba(236,227,208,.12);
+    --line-2:   rgba(236,227,208,.20);
+    --halo:     rgba(201,126,69,.30);
+
+    --serif: ui-serif, Georgia, "Times New Roman", "Times", serif;
+    --sans:  ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+    --measure: 60ch;
+    --pad: clamp(1.25rem, 5vw, 4rem);
+    --maxw: 1180px;
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){ html{ scroll-behavior:auto; } }
+
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--bone);
+    font-family:var(--sans);
+    font-size:clamp(1rem,.96rem + .2vw,1.0625rem);
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+
+  /* ---- grain de film sur toute la page ---- */
+  body::before{
+    content:"";
+    position:fixed; inset:0; z-index:9999; pointer-events:none;
+    opacity:.045; mix-blend-mode:soft-light;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---- typographie de base ---- */
+  h1,h2,h3{ font-family:var(--serif); font-weight:400; text-wrap:balance; letter-spacing:-.01em; }
+  p{ text-wrap:pretty; }
+  a{ color:inherit; }
+
+  .eyebrow{
+    font-family:var(--sans);
+    font-size:.72rem; font-weight:600;
+    text-transform:uppercase; letter-spacing:.3em;
+    color:var(--copper);
+    display:inline-flex; align-items:center; gap:.7em;
+  }
+  .eyebrow::before{
+    content:""; width:2.4em; height:1px;
+    background:linear-gradient(90deg,transparent,var(--copper));
+  }
+
+  :focus-visible{
+    outline:2px solid var(--ember);
+    outline-offset:3px;
+    border-radius:2px;
+  }
+
+  .skip{
+    position:absolute; left:-999px; top:0; z-index:10000;
+    background:var(--copper); color:var(--ink);
+    padding:.7rem 1.1rem; font-weight:700; border-radius:0 0 6px 0;
+  }
+  .skip:focus{ left:0; }
+
+  .wrap{ max-width:var(--maxw); margin-inline:auto; padding-inline:var(--pad); }
+
+  /* ============================================================
+     EN-TÊTE / NAV
+     ============================================================ */
+  .site-head{
+    position:sticky; top:0; z-index:100;
+    background:rgba(11,9,8,.72);
+    backdrop-filter:blur(12px) saturate(1.1);
+    -webkit-backdrop-filter:blur(12px) saturate(1.1);
+    border-bottom:1px solid var(--line);
+  }
+  .site-head .wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:1.5rem; min-height:72px;
+  }
+  .brand{
+    font-family:var(--serif); font-size:1.35rem; letter-spacing:.01em;
+    text-decoration:none; display:flex; align-items:center; gap:.6rem;
+    white-space:nowrap;
+  }
+  .brand .mark{ color:var(--copper); }
+  .brand b{ font-weight:400; }
+  .brand i{ font-style:italic; color:var(--bone-dim); font-size:.9em; }
+
+  .nav{ display:flex; align-items:center; gap:clamp(1rem,2.4vw,2.2rem); }
+  .nav a{
+    font-size:.82rem; text-transform:uppercase; letter-spacing:.16em;
+    color:var(--bone-dim); text-decoration:none;
+    padding:.3rem 0; position:relative; transition:color .25s;
+  }
+  .nav a::after{
+    content:""; position:absolute; left:0; bottom:-2px; height:1px; width:0;
+    background:var(--copper); transition:width .3s ease;
+  }
+  .nav a:hover{ color:var(--bone); }
+  .nav a:hover::after{ width:100%; }
+  .nav-links{ display:flex; gap:clamp(1rem,2.4vw,2.2rem); }
+
+  .btn{
+    font-family:var(--sans); font-size:.82rem; font-weight:600;
+    text-transform:uppercase; letter-spacing:.16em;
+    text-decoration:none; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center; gap:.6em;
+    padding:.85em 1.6em; border-radius:2px; border:1px solid transparent;
+    transition:transform .2s, box-shadow .3s, background .3s, color .3s, border-color .3s;
+  }
+  .btn-solid{
+    background:linear-gradient(180deg,var(--ember),var(--copper));
+    color:#1a1109;
+    box-shadow:0 0 0 1px rgba(232,172,108,.25), 0 12px 34px -14px rgba(201,126,69,.75);
+  }
+  .btn-solid:hover{ transform:translateY(-2px); box-shadow:0 0 0 1px rgba(232,172,108,.4), 0 18px 44px -14px rgba(201,126,69,.9); }
+  .btn-ghost{
+    background:transparent; color:var(--bone); border-color:var(--line-2);
+  }
+  .btn-ghost:hover{ border-color:var(--copper); color:var(--ember); }
+  .btn-head{ padding:.7em 1.3em; }
+
+  @media (max-width:760px){
+    .nav-links{ display:none; }
+  }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .hero{ position:relative; overflow:hidden; }
+  .hero-halo{
+    position:absolute; inset:-20% -10% auto -10%; height:120%;
+    background:
+      radial-gradient(60% 50% at 50% 0%, var(--halo), transparent 70%),
+      radial-gradient(40% 30% at 78% 8%, rgba(232,172,108,.16), transparent 70%);
+    pointer-events:none;
+    animation:breathe 9s ease-in-out infinite;
+  }
+  @keyframes breathe{ 0%,100%{opacity:.85;} 50%{opacity:1;} }
+  @media (prefers-reduced-motion: reduce){ .hero-halo{ animation:none; } }
+
+  .hero .wrap{
+    position:relative; z-index:2;
+    display:grid; grid-template-columns:1.15fr .85fr; gap:clamp(2rem,5vw,4rem);
+    align-items:center;
+    padding-block:clamp(3.5rem,9vw,7rem);
+  }
+  .hero-lede .eyebrow{ margin-bottom:1.6rem; }
+  .hero h1{
+    font-size:clamp(3.1rem,4rem + 4vw,7rem);
+    line-height:.92; margin:.1em 0 .5em;
+    letter-spacing:-.02em;
+  }
+  .hero h1 em{ font-style:italic; color:var(--ember); display:block; }
+  .hero-sub{
+    max-width:46ch; color:var(--bone-dim);
+    font-size:clamp(1.05rem,1rem + .4vw,1.2rem); line-height:1.65;
+  }
+  .hero-actions{ display:flex; flex-wrap:wrap; gap:1rem; margin-top:2.2rem; }
+  .hero-meta{
+    margin-top:3rem; display:flex; flex-wrap:wrap; gap:1.6rem 2.4rem;
+    padding-top:1.6rem; border-top:1px solid var(--line);
+    color:var(--bone-dim); font-size:.86rem; letter-spacing:.04em;
+  }
+  .hero-meta span{ display:flex; align-items:baseline; gap:.55rem; }
+  .hero-meta b{ font-family:var(--serif); color:var(--bone); font-size:1.05rem; font-weight:400; }
+
+  .hero-art{ position:relative; aspect-ratio:1/1.08; }
+  .hero-art svg{ width:100%; height:100%; display:block; }
+
+  @media (max-width:880px){
+    .hero .wrap{ grid-template-columns:1fr; gap:2.5rem; }
+    .hero-art{ max-width:360px; order:-1; margin-inline:auto; width:100%; }
+  }
+
+  /* ============================================================
+     SECTION générique
+     ============================================================ */
+  .section{ padding-block:clamp(4rem,9vw,7.5rem); position:relative; }
+  .section-head{ max-width:var(--measure); margin-bottom:clamp(2.5rem,5vw,4rem); }
+  .section-head h2{
+    font-size:clamp(2.1rem,1.6rem + 2.4vw,3.4rem);
+    line-height:1.05; margin:1rem 0 0;
+  }
+  .section-head h2 em{ font-style:italic; color:var(--copper); }
+  .lead{ color:var(--bone-dim); font-size:1.12rem; margin-top:1.2rem; max-width:var(--measure); }
+
+  .rule{ height:1px; background:var(--line); border:0; margin:0; }
+
+  /* divider ornement (couvert) */
+  .ornament{ display:flex; align-items:center; gap:1.5rem; color:var(--copper); }
+  .ornament::before,.ornament::after{ content:""; height:1px; flex:1; background:linear-gradient(90deg,transparent,var(--line-2),transparent); }
+  .ornament svg{ width:64px; height:22px; flex:none; }
+
+  /* ============================================================
+     LA TABLE (philosophie)
+     ============================================================ */
+  #la-table{ background:linear-gradient(180deg,var(--ink),var(--char) 55%,var(--ink)); }
+  .table-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4.5rem);
+    align-items:center;
+  }
+  .table-copy p{ color:var(--bone-dim); }
+  .table-copy p + p{ margin-top:1.1rem; }
+  .table-copy .first{ color:var(--bone); font-family:var(--serif); font-size:1.4rem; line-height:1.45; }
+  .table-copy .first::first-letter{
+    font-size:3.4rem; float:left; line-height:.8; padding:.05em .12em 0 0;
+    color:var(--copper); font-style:italic;
+  }
+  .pillars{ list-style:none; margin:2.4rem 0 0; padding:0; display:grid; gap:0; }
+  .pillars li{
+    display:grid; grid-template-columns:auto 1fr; gap:1.1rem; align-items:baseline;
+    padding:1.1rem 0; border-top:1px solid var(--line);
+  }
+  .pillars li:last-child{ border-bottom:1px solid var(--line); }
+  .pillars .k{ font-family:var(--serif); font-style:italic; color:var(--copper); font-size:.95rem; white-space:nowrap; }
+  .pillars .v{ color:var(--bone); font-size:1rem; }
+  .pillars .v small{ display:block; color:var(--bone-dim); font-size:.86rem; margin-top:.15rem; }
+  .table-art{ position:relative; }
+  .table-art svg{ width:100%; height:auto; display:block; }
+  @media (max-width:880px){ .table-grid{ grid-template-columns:1fr; } .table-art{ max-width:420px; } }
+
+  /* ============================================================
+     LA CARTE — pièce typographique
+     ============================================================ */
+  #la-carte{ background:var(--ink); }
+  .carte-top{ display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:1.5rem; margin-bottom:1rem; }
+  .carte-note{
+    color:var(--bone-dim); font-size:.86rem; letter-spacing:.03em;
+    border:1px solid var(--line-2); border-radius:2px; padding:.7rem 1.1rem;
+    max-width:34ch;
+  }
+  .carte-note b{ color:var(--ember); font-weight:600; }
+
+  .menu-cols{
+    display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4.5rem);
+    margin-top:clamp(2rem,4vw,3.5rem);
+  }
+  .menu-block + .menu-block-full{ grid-column:1 / -1; }
+  .menu-block h3{
+    font-size:1.05rem; text-transform:uppercase; letter-spacing:.24em;
+    font-family:var(--sans); font-weight:600; color:var(--copper);
+    margin:0 0 .4rem;
+  }
+  .menu-block .sub{ color:var(--bone-dim); font-size:.85rem; margin:0 0 1.4rem; font-style:italic; font-family:var(--serif); }
+
+  .dish{ padding:1.05rem 0; border-top:1px solid var(--line); }
+  .dish:first-of-type{ border-top:0; }
+  .dish-line{
+    display:flex; align-items:baseline; gap:.7rem;
+  }
+  .dish-name{
+    font-family:var(--serif); font-size:1.22rem; color:var(--bone);
+    line-height:1.2; letter-spacing:-.005em;
+  }
+  .dish-lead{
+    flex:1; align-self:flex-end; height:0;
+    border-bottom:1px dotted var(--line-2); transform:translateY(-.28em);
+  }
+  .dish-price{
+    font-family:var(--sans); font-variant-numeric:tabular-nums lining-nums;
+    font-feature-settings:"tnum" 1;
+    font-size:1.05rem; color:var(--ember); white-space:nowrap; letter-spacing:.02em;
+  }
+  .dish-price small{ color:var(--bone-dim); font-size:.72rem; margin-right:.35em; letter-spacing:.08em; }
+  .dish-desc{ color:var(--bone-dim); font-size:.92rem; margin:.4rem 0 0; max-width:52ch; }
+  .dish .tag{
+    display:inline-block; margin-left:.6rem; font-family:var(--sans);
+    font-size:.62rem; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--copper); border:1px solid var(--line-2); border-radius:20px;
+    padding:.15em .7em; vertical-align:middle;
+  }
+  @media (max-width:760px){ .menu-cols{ grid-template-columns:1fr; } }
+
+  /* ============================================================
+     L'AMBIANCE — bloc visuel CSS/SVG
+     ============================================================ */
+  #ambiance{
+    background:
+      radial-gradient(70% 90% at 50% 12%, rgba(201,126,69,.14), transparent 60%),
+      linear-gradient(180deg,var(--ink),#0e0a07 60%,var(--ink));
+    text-align:center;
+  }
+  .ambiance-inner{ max-width:900px; margin-inline:auto; }
+  .ambiance-scene{
+    position:relative; margin:clamp(2rem,5vw,3.5rem) auto 0; max-width:760px;
+    aspect-ratio:16/9;
+    border:1px solid var(--line); border-radius:4px; overflow:hidden;
+    background:radial-gradient(60% 80% at 50% 40%, #1c150e, #0a0705 75%);
+    box-shadow:inset 0 0 90px rgba(0,0,0,.6), 0 40px 90px -50px rgba(201,126,69,.5);
+  }
+  .ambiance-scene svg{ width:100%; height:100%; display:block; }
+  .flame{ transform-origin:center bottom; animation:flick 3.2s ease-in-out infinite; }
+  @keyframes flick{
+    0%,100%{ opacity:.95; transform:scale(1) translateY(0); }
+    40%{ opacity:.8; transform:scale(.96) translateY(.5px) rotate(-1.5deg); }
+    70%{ opacity:1; transform:scale(1.04) translateY(-.5px) rotate(1deg); }
+  }
+  .glow-pulse{ animation:glow 4s ease-in-out infinite; }
+  @keyframes glow{ 0%,100%{opacity:.5;} 50%{opacity:.9;} }
+  @media (prefers-reduced-motion: reduce){ .flame,.glow-pulse{ animation:none; } }
+  .ambiance blockquote{
+    margin:clamp(2rem,4vw,3rem) auto 0; max-width:38ch;
+    font-family:var(--serif); font-style:italic; font-size:clamp(1.3rem,1rem + 1.4vw,1.9rem);
+    line-height:1.4; color:var(--bone);
+  }
+  .ambiance blockquote span{ color:var(--copper); }
+
+  /* ============================================================
+     HORAIRES + INFOS
+     ============================================================ */
+  #horaires{ background:linear-gradient(180deg,var(--ink),var(--char) 50%,var(--ink)); }
+  .hours-grid{ display:grid; grid-template-columns:1.1fr .9fr; gap:clamp(2rem,5vw,4rem); }
+  .hours-list{ list-style:none; margin:0; padding:0; }
+  .hours-list li{
+    display:flex; align-items:baseline; justify-content:space-between; gap:1.5rem;
+    padding:1rem 0; border-top:1px solid var(--line);
+  }
+  .hours-list li:last-child{ border-bottom:1px solid var(--line); }
+  .hours-list .day{ font-family:var(--serif); font-size:1.1rem; }
+  .hours-list .time{ color:var(--bone-dim); font-variant-numeric:tabular-nums; text-align:right; }
+  .hours-list .closed{ color:var(--copper); font-style:italic; }
+  .info-card{
+    background:var(--char-2); border:1px solid var(--line); border-radius:4px;
+    padding:clamp(1.5rem,3vw,2.2rem);
+  }
+  .info-card h3{ font-size:1.3rem; margin:0 0 1rem; }
+  .info-card address{ font-style:normal; color:var(--bone-dim); line-height:1.9; }
+  .info-card address a{ color:var(--bone); text-decoration:none; border-bottom:1px solid var(--line-2); }
+  .info-card address a:hover{ color:var(--ember); border-color:var(--copper); }
+  .info-card .label{ display:block; font-size:.7rem; text-transform:uppercase; letter-spacing:.2em; color:var(--copper); margin-top:1.2rem; margin-bottom:.2rem; }
+  @media (max-width:760px){ .hours-grid{ grid-template-columns:1fr; } }
+
+  /* ============================================================
+     RÉSERVATION (formulaire d'aspect pro, démo)
+     ============================================================ */
+  #reservation{ background:var(--ink); }
+  .resa-grid{ display:grid; grid-template-columns:.85fr 1.15fr; gap:clamp(2rem,5vw,4.5rem); align-items:start; }
+  .resa-copy .lead{ margin-top:1rem; }
+  .resa-badge{
+    display:inline-flex; align-items:center; gap:.6rem; margin-top:1.6rem;
+    font-size:.78rem; letter-spacing:.06em; color:var(--bone-dim);
+    background:var(--char-2); border:1px solid var(--line); border-radius:24px;
+    padding:.5rem 1rem;
+  }
+  .resa-badge .dot{ width:7px; height:7px; border-radius:50%; background:var(--ember); box-shadow:0 0 10px var(--ember); }
+
+  form.resa{
+    background:linear-gradient(180deg,var(--char-2),var(--char));
+    border:1px solid var(--line); border-radius:6px;
+    padding:clamp(1.5rem,3.5vw,2.6rem);
+    box-shadow:0 40px 90px -60px rgba(201,126,69,.5);
+  }
+  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+  .field{ display:flex; flex-direction:column; gap:.45rem; margin-bottom:1.2rem; }
+  .field label{ font-size:.74rem; text-transform:uppercase; letter-spacing:.16em; color:var(--bone-dim); }
+  .field label .req{ color:var(--copper); }
+  .field input,.field select,.field textarea{
+    font-family:var(--sans); font-size:1rem; color:var(--bone);
+    background:var(--ink); border:1px solid var(--line-2); border-radius:3px;
+    padding:.8rem .9rem; width:100%; transition:border-color .2s, box-shadow .2s;
+  }
+  .field textarea{ resize:vertical; min-height:96px; }
+  .field input::placeholder,.field textarea::placeholder{ color:#6c6250; }
+  .field input:focus,.field select:focus,.field textarea:focus{
+    outline:none; border-color:var(--copper);
+    box-shadow:0 0 0 3px rgba(201,126,69,.18);
+  }
+  .field select{ appearance:none; cursor:pointer;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23C97E45' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right .9rem center; padding-right:2.4rem;
+  }
+  .resa-submit{ display:flex; flex-wrap:wrap; align-items:center; gap:1rem; margin-top:.5rem; }
+  .resa-submit .btn{ width:auto; }
+  .resa-note{ font-size:.8rem; color:var(--bone-dim); }
+  @media (max-width:880px){ .resa-grid{ grid-template-columns:1fr; } }
+  @media (max-width:520px){ .field-row{ grid-template-columns:1fr; } }
+
+  /* ============================================================
+     MENTIONS LÉGALES + DISCLAIMER
+     ============================================================ */
+  #mentions{ background:var(--char); padding-block:clamp(3rem,6vw,5rem); }
+  .disclaimer{
+    display:flex; align-items:flex-start; gap:1rem;
+    background:rgba(201,126,69,.08); border:1px solid var(--line-2);
+    border-left:3px solid var(--copper); border-radius:4px;
+    padding:1.1rem 1.3rem; margin-bottom:2.5rem;
+    color:var(--bone); font-size:.95rem;
+  }
+  .disclaimer svg{ flex:none; width:22px; height:22px; color:var(--copper); margin-top:.15rem; }
+  .disclaimer strong{ color:var(--ember); }
+  .legal-cols{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:2rem; }
+  .legal-cols h3{ font-size:.72rem; text-transform:uppercase; letter-spacing:.2em; color:var(--copper); font-family:var(--sans); font-weight:600; margin:0 0 .7rem; }
+  .legal-cols p{ color:var(--bone-dim); font-size:.9rem; line-height:1.75; margin:0; }
+  .legal-cols a{ color:var(--bone); text-decoration:none; border-bottom:1px solid var(--line-2); }
+  .legal-cols a:hover{ color:var(--ember); }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+  .site-foot{ background:var(--ink); border-top:1px solid var(--line); padding-block:clamp(2.5rem,5vw,3.5rem); }
+  .foot-grid{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1.5rem; }
+  .foot-brand{ font-family:var(--serif); font-size:1.2rem; }
+  .foot-brand .mark{ color:var(--copper); }
+  .credit{ font-size:.88rem; color:var(--bone-dim); text-align:right; }
+  .credit a{ color:var(--ember); text-decoration:none; font-weight:600; border-bottom:1px solid transparent; transition:border-color .2s; }
+  .credit a:hover{ border-color:var(--ember); }
+  .foot-copy{ margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--line); font-size:.8rem; color:#7a6f5c; }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#contenu">Aller au contenu</a>
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Table du Vallon — accueil">
+      <span class="mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="9.2" stroke="currentColor" stroke-width="1"/>
+          <circle cx="11" cy="11" r="5.4" stroke="currentColor" stroke-width="1" opacity=".6"/>
+          <path d="M11 2.2v3.4M11 16.4v3.4M2.2 11h3.4M16.4 11h3.4" stroke="currentColor" stroke-width="1"/>
+        </svg>
+      </span>
+      <b>Table du <i>Vallon</i></b>
+    </a>
+    <nav class="nav" aria-label="Navigation principale">
+      <div class="nav-links">
+        <a href="#la-table">La table</a>
+        <a href="#la-carte">La carte</a>
+        <a href="#ambiance">L'ambiance</a>
+        <a href="#horaires">Horaires</a>
+      </div>
+      <a class="btn btn-solid btn-head" href="#reservation">Réserver</a>
+    </nav>
+  </div>
+</header>
+
+<main id="contenu">
+
+  <!-- ============================ HERO ============================ -->
+  <section class="hero" id="top" aria-labelledby="hero-titre">
+    <div class="hero-halo" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="hero-lede">
+        <span class="eyebrow">Table contemporaine · Lavaux, Vaud</span>
+        <h1 id="hero-titre">Table du <em>Vallon</em></h1>
+        <p class="hero-sub">Une cuisine du soir, tenue à la braise et au produit vaudois. Vingt-quatre couverts, un menu qui change avec le marché, la lumière basse d'une salle taillée pour la conversation.</p>
+        <div class="hero-actions">
+          <a class="btn btn-solid" href="#reservation">Réserver une table</a>
+          <a class="btn btn-ghost" href="#la-carte">Découvrir la carte</a>
+        </div>
+        <div class="hero-meta" role="list">
+          <span role="listitem"><b>5</b> services au menu Vallon</span>
+          <span role="listitem"><b>24</b> couverts, un seul service</span>
+          <span role="listitem"><b>Mar–Sam</b> dès 19h00</span>
+        </div>
+      </div>
+
+      <!-- SVG dessiné : volute de fumée + assiette + couvert -->
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 380 410" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration : une assiette et une volute de fumée">
+          <defs>
+            <radialGradient id="plateGlow" cx="50%" cy="46%" r="55%">
+              <stop offset="0%" stop-color="#2a2015"/>
+              <stop offset="70%" stop-color="#15100b"/>
+              <stop offset="100%" stop-color="#0b0908"/>
+            </radialGradient>
+            <linearGradient id="smoke" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="#C97E45" stop-opacity="0"/>
+              <stop offset="55%" stop-color="#E8AC6C" stop-opacity=".55"/>
+              <stop offset="100%" stop-color="#E8AC6C" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+
+          <!-- halo -->
+          <circle cx="190" cy="250" r="170" fill="url(#plateGlow)"/>
+
+          <!-- volute de fumée -->
+          <path d="M190 70 C168 100 214 122 192 152 C170 182 216 204 194 236"
+                stroke="url(#smoke)" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <path d="M205 88 C192 110 222 126 208 148"
+                stroke="url(#smoke)" stroke-width="2" stroke-linecap="round" fill="none" opacity=".7"/>
+
+          <!-- assiette -->
+          <ellipse cx="190" cy="270" rx="128" ry="120" stroke="#3a2e1f" stroke-width="1.5"/>
+          <ellipse cx="190" cy="270" rx="112" ry="105" stroke="#C97E45" stroke-width="1" opacity=".65"/>
+          <ellipse cx="190" cy="270" rx="70" ry="65" stroke="#E8AC6C" stroke-width="1" opacity=".5"/>
+          <!-- reflet chaud sur le bord -->
+          <path d="M96 210 A112 105 0 0 1 250 176" stroke="#E8AC6C" stroke-width="2" stroke-linecap="round" opacity=".5" fill="none"/>
+
+          <!-- couvert stylisé : fourchette + couteau -->
+          <g stroke="#C9BCA2" stroke-width="1.6" stroke-linecap="round" fill="none" opacity=".8">
+            <!-- fourchette -->
+            <path d="M60 372 V300 M52 300 V276 M60 300 V270 M68 300 V276 M52 300 h16"/>
+            <!-- couteau -->
+            <path d="M320 372 V304 M320 304 C330 296 330 280 320 270 C312 262 312 300 320 304"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ LA TABLE ============================ -->
+  <section class="section" id="la-table" aria-labelledby="table-titre">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">La table</span>
+        <h2 id="table-titre">Le produit d'abord, <em>le geste ensuite</em></h2>
+      </div>
+
+      <div class="table-grid">
+        <div class="table-copy">
+          <p class="first">Nous cuisinons ce que le lac, la Broye et les coteaux de Lavaux veulent bien nous donner cette semaine-là. La carte est courte parce que le marché l'est aussi.</p>
+          <p>Pas de fournisseur anonyme : la féra vient du Léman le matin même, l'agneau d'un élevage de la Broye, les légumes de deux maraîchers entre Rovray et Cully. Ce qui n'est pas de saison n'entre pas en cuisine.</p>
+          <p>La braise est notre signature. Un feu de bois de hêtre tenu tout le service, pour une cuisson qui concentre plus qu'elle ne masque. Le reste tient en un mot : la retenue.</p>
+
+          <ul class="pillars">
+            <li><span class="k">Terroir</span><span class="v">Léman, Broye &amp; Lavaux<small>Circuit court, tout à moins de 30 kilomètres.</small></span></li>
+            <li><span class="k">Saison</span><span class="v">Une carte qui bouge<small>Réécrite chaque semaine selon l'arrivage.</small></span></li>
+            <li><span class="k">Braise</span><span class="v">Feu de hêtre, tout le service<small>Cuisson vive, assaisonnement discret.</small></span></li>
+          </ul>
+        </div>
+
+        <!-- SVG : ligne d'assiette dressée -->
+        <div class="table-art" aria-hidden="true">
+          <svg viewBox="0 0 440 440" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration : dressage à l'assiette">
+            <circle cx="220" cy="220" r="200" stroke="#2b2216" stroke-width="1"/>
+            <circle cx="220" cy="220" r="150" stroke="#3a2e1f" stroke-width="1.5"/>
+            <circle cx="220" cy="220" r="150" stroke="#C97E45" stroke-width="1" opacity=".4" stroke-dasharray="2 8"/>
+            <circle cx="220" cy="220" r="96" stroke="#C97E45" stroke-width="1" opacity=".6"/>
+            <!-- traits de sauce -->
+            <path d="M150 250 C190 210 250 210 300 250" stroke="#E8AC6C" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>
+            <path d="M168 272 C205 244 250 244 288 268" stroke="#C97E45" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>
+            <!-- éléments dressés -->
+            <ellipse cx="205" cy="205" rx="34" ry="20" transform="rotate(-18 205 205)" stroke="#C9BCA2" stroke-width="1.4" opacity=".8"/>
+            <ellipse cx="248" cy="228" rx="20" ry="13" transform="rotate(12 248 228)" stroke="#C9BCA2" stroke-width="1.2" opacity=".7"/>
+            <!-- points d'herbe / condiment -->
+            <g fill="#E8AC6C" opacity=".8">
+              <circle cx="182" cy="238" r="2.4"/><circle cx="266" cy="200" r="2"/><circle cx="228" cy="256" r="1.8"/>
+              <circle cx="200" cy="182" r="1.6"/><circle cx="252" cy="252" r="2.2"/>
+            </g>
+            <!-- brins -->
+            <g stroke="#8aa06a" stroke-width="1.4" stroke-linecap="round" opacity=".7" fill="none">
+              <path d="M214 232 q6 -14 2 -26"/><path d="M232 224 q10 -8 20 -8"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ LA CARTE ============================ -->
+  <section class="section" id="la-carte" aria-labelledby="carte-titre">
+    <div class="wrap">
+      <div class="carte-top">
+        <div class="section-head" style="margin-bottom:0">
+          <span class="eyebrow">La carte</span>
+          <h2 id="carte-titre">Le menu <em>du soir</em></h2>
+          <p class="lead">Servie à l'assiette, à composer librement, ou en cinq services au menu Vallon. Prix nets en francs suisses, service compris.</p>
+        </div>
+        <p class="carte-note"><b>Menu Vallon</b> — 5 services à <span style="font-variant-numeric:tabular-nums">CHF 98.–</span> · accord mets &amp; vins <span style="font-variant-numeric:tabular-nums">+ CHF 68.–</span></p>
+      </div>
+
+      <div class="menu-cols">
+
+        <!-- ENTRÉES -->
+        <div class="menu-block">
+          <h3>Entrées</h3>
+          <p class="sub">Pour ouvrir, tout en fraîcheur.</p>
+
+          <div class="dish">
+            <div class="dish-line">
+              <span class="dish-name">Tartare de féra du Léman</span>
+              <span class="dish-lead" aria-hidden="true"></span>
+              <span class="dish-price"><small>CHF</small>24.–</span>
+            </div>
+            <p class="dish-desc">Huile de noisette, pomme verte, aneth, pain de seigle grillé.</p>
+          </div>
+
+          <div class="dish">
+            <div class="dish-line">
+              <span class="dish-name">Velouté de courge musquée</span>
+              <span class="dish-lead" aria-hidden="true"></span>
+              <span class="dish-price"><small>CHF</small>19.–</span>
+            </div>
+            <p class="dish-desc">Lard paysan de la Broye, sauge brûlée, graines torréfiées.</p>
+          </div>
+
+          <div class="dish">
+            <div class="dish-line">
+              <span class="dish-name">Œuf parfait, topinambour</span>
+              <span class="dish-lead" aria-hidden="true"></span>
+              <span class="dish-price"><small>CHF</small>21.–</span>
+            </div>
+            <p class="dish-desc">Crème de topinambour, noisettes du Vully, huile de persil.</p>
+          </div>
+
+          <div class="dish">
+            <div class="dish-line">
+              <span class="dish-name">Betterave de Rovray</span>
+              <span class="tag">Végétarien</span>
+              <span class="dish-lead" aria-hidden="true"></span>
+              <span class="dish-price"><small>CHF</small>18.–</span>
+            </div>
+            <p class="dish-desc">Chèvre frais, vinaigre de sureau, noix concassées.</p>
+          </div>
+        </div>
+
+        <!-- PLATS -->
+        <div class="menu-block">
+          <h3>Plats</h3>
+          <p class="sub">À la braise, au produit du jour.</p>
+
+          <div class="dish">
+            <div class="dish-line">
+              <span class="dish-name">Filet de perche du lac</span>
+              <span class="dish-lead" aria-hidden="true"></span>
+              <span class="dish-price"><small>CHF</small>38.–</span>
+            </div>
+            <p class="dish-desc">Beurre noisette, câpres, persil plat, pommes rattes.</p>
+          </div>
+
+          <div class="dish">
+            <div class="dish-line">
+              <span class="dish-name">Omble chevalier rôti</span>
+              <span class="dish-lead" aria-hidden="true"></span>
+              <span class="dish-price"><small>CHF</small>42.–</span>
+            </div>
+            <p class="dish-desc">Poireaux confits, sabayon au Chasselas de Lavaux.</p>
+          </div>
+
+          <div class="dish">
+            <div class="dish-line">
+              <span class="dish-name">Selle d'agneau de la Broye</span>
+              <span class="dish-lead" aria-hidden="true"></span>
+              <span class="dish-price"><small>CHF</small>46.–</span>
+            </div>
+            <p class="dish-desc">Aubergine fumée, jus corsé au thym, ail noir.</p>
+          </div>
+
+          <div class="dish">
+            <div class="dish-line">
+              <span class="dish-name">Pigeon des Grangettes</span>
+              <span class="dish-lead" aria-hidden="true"></span>
+              <span class="dish-price"><small>CHF</small>49.–</span>
+            </div>
+            <p class="dish-desc">Betterave, sauce réduite au vin rouge de Lavaux.</p>
+          </div>
+
+          <div class="dish">
+            <div class="dish-line">
+              <span class="dish-name">Risotto Carnaroli</span>
+              <span class="tag">Végétarien</span>
+              <span class="dish-lead" aria-hidden="true"></span>
+              <span class="dish-price"><small>CHF</small>34.–</span>
+            </div>
+            <p class="dish-desc">Champignons des bois, vieux Gruyère AOP, huile de sarriette.</p>
+          </div>
+        </div>
+
+        <!-- DESSERTS (pleine largeur) -->
+        <div class="menu-block menu-block-full">
+          <hr class="rule" style="margin:2.5rem 0" aria-hidden="true">
+          <h3>Desserts &amp; fromages</h3>
+          <p class="sub">Pour finir sur une note vaudoise.</p>
+
+          <div class="menu-cols" style="margin-top:1.4rem">
+            <div>
+              <div class="dish">
+                <div class="dish-line">
+                  <span class="dish-name">Soufflé chaud à la Williamine</span>
+                  <span class="dish-lead" aria-hidden="true"></span>
+                  <span class="dish-price"><small>CHF</small>16.–</span>
+                </div>
+                <p class="dish-desc">Glace fleur de lait, poire pochée. Compter dix minutes.</p>
+              </div>
+              <div class="dish">
+                <div class="dish-line">
+                  <span class="dish-name">Tarte fine aux coings</span>
+                  <span class="dish-lead" aria-hidden="true"></span>
+                  <span class="dish-price"><small>CHF</small>15.–</span>
+                </div>
+                <p class="dish-desc">Caramel au beurre salé, crème crue de la ferme.</p>
+              </div>
+            </div>
+            <div>
+              <div class="dish">
+                <div class="dish-line">
+                  <span class="dish-name">Chocolat grand cru &amp; sarrasin</span>
+                  <span class="dish-lead" aria-hidden="true"></span>
+                  <span class="dish-price"><small>CHF</small>17.–</span>
+                </div>
+                <p class="dish-desc">Ganache 70 %, sarrasin torréfié, fleur de sel.</p>
+              </div>
+              <div class="dish">
+                <div class="dish-line">
+                  <span class="dish-name">Fromages affinés du Jura</span>
+                  <span class="dish-lead" aria-hidden="true"></span>
+                  <span class="dish-price"><small>CHF</small>19.–</span>
+                </div>
+                <p class="dish-desc">Trois affinages, confiture de cerises noires, pain aux noix.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ L'AMBIANCE ============================ -->
+  <section class="section" id="ambiance" aria-labelledby="ambiance-titre">
+    <div class="wrap ambiance-inner">
+      <span class="eyebrow" style="justify-content:center">L'ambiance</span>
+      <h2 id="ambiance-titre" style="font-size:clamp(2.1rem,1.6rem + 2.4vw,3.4rem); margin:1rem 0 0;">Une salle basse, <em style="font-style:italic;color:var(--copper)">taillée pour le soir</em></h2>
+      <p class="lead" style="margin-inline:auto; margin-top:1.1rem;">Murs de pierre, bougie à chaque table, la braise que l'on entend depuis la salle. Vingt-quatre couverts, un seul service — le temps de bien faire les choses.</p>
+
+      <!-- Scène nocturne dessinée : table dressée + bougie -->
+      <div class="ambiance-scene">
+        <svg viewBox="0 0 760 428" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration : table dressée à la bougie dans une salle sombre">
+          <defs>
+            <radialGradient id="candleHalo" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#E8AC6C" stop-opacity=".85"/>
+              <stop offset="35%" stop-color="#C97E45" stop-opacity=".35"/>
+              <stop offset="100%" stop-color="#C97E45" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="tableTop" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#241a11"/>
+              <stop offset="100%" stop-color="#120c07"/>
+            </linearGradient>
+            <radialGradient id="flameG" cx="50%" cy="35%" r="60%">
+              <stop offset="0%" stop-color="#FFF3D6"/>
+              <stop offset="45%" stop-color="#E8AC6C"/>
+              <stop offset="100%" stop-color="#C97E45" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <!-- halo de bougie -->
+          <circle class="glow-pulse" cx="380" cy="150" r="230" fill="url(#candleHalo)"/>
+
+          <!-- table -->
+          <path d="M70 300 L690 300 L740 400 L20 400 Z" fill="url(#tableTop)" stroke="#3a2e1f" stroke-width="1"/>
+          <line x1="70" y1="300" x2="690" y2="300" stroke="#C97E45" stroke-width="1" opacity=".4"/>
+
+          <!-- bougie -->
+          <g>
+            <rect x="372" y="196" width="16" height="70" rx="3" fill="#2a2016" stroke="#C97E45" stroke-width="1" opacity=".9"/>
+            <rect x="372" y="196" width="6" height="70" rx="3" fill="#E8AC6C" opacity=".25"/>
+            <line x1="380" y1="196" x2="380" y2="186" stroke="#5a4a30" stroke-width="1.5"/>
+            <ellipse class="flame" cx="380" cy="176" rx="10" ry="20" fill="url(#flameG)"/>
+            <ellipse class="flame" cx="380" cy="180" rx="4" ry="9" fill="#FFF3D6" opacity=".95"/>
+          </g>
+
+          <!-- assiette gauche -->
+          <ellipse cx="215" cy="340" rx="88" ry="30" stroke="#4a3a26" stroke-width="1.5"/>
+          <ellipse cx="215" cy="340" rx="60" ry="20" stroke="#C97E45" stroke-width="1" opacity=".55"/>
+          <!-- couverts gauche -->
+          <line x1="110" y1="326" x2="110" y2="356" stroke="#C9BCA2" stroke-width="1.6" opacity=".7"/>
+          <line x1="320" y1="326" x2="320" y2="356" stroke="#C9BCA2" stroke-width="1.6" opacity=".7"/>
+
+          <!-- assiette droite -->
+          <ellipse cx="545" cy="340" rx="88" ry="30" stroke="#4a3a26" stroke-width="1.5"/>
+          <ellipse cx="545" cy="340" rx="60" ry="20" stroke="#C97E45" stroke-width="1" opacity=".55"/>
+          <line x1="440" y1="326" x2="440" y2="356" stroke="#C9BCA2" stroke-width="1.6" opacity=".7"/>
+          <line x1="650" y1="326" x2="650" y2="356" stroke="#C9BCA2" stroke-width="1.6" opacity=".7"/>
+
+          <!-- verres de vin -->
+          <g stroke="#C9BCA2" stroke-width="1.4" fill="none" opacity=".8">
+            <path d="M250 250 C250 274 274 274 274 250 C274 240 268 236 262 236 C256 236 250 240 250 250 Z M262 274 V296 M250 298 h24"/>
+            <path d="M486 250 C486 274 510 274 510 250 C510 240 504 236 498 236 C492 236 486 240 486 250 Z M498 274 V296 M486 298 h24"/>
+          </g>
+          <!-- vin dans le verre -->
+          <path d="M252 252 C255 266 269 266 272 252 Z" fill="#7a2b2f" opacity=".7"/>
+          <path d="M488 252 C491 266 505 266 508 252 Z" fill="#7a2b2f" opacity=".7"/>
+
+          <!-- pierres de mur (arrière-plan discret) -->
+          <g stroke="#1e160e" stroke-width="1" opacity=".8">
+            <path d="M40 60 h120 M40 92 h80 M160 60 v60 M120 92 v40"/>
+            <path d="M600 50 h130 M660 82 v50 M600 110 h60"/>
+          </g>
+        </svg>
+      </div>
+
+      <blockquote>« On baisse la lumière, on monte la braise. <span>Le reste appartient à la table.</span> »</blockquote>
+    </div>
+  </section>
+
+  <!-- ============================ HORAIRES ============================ -->
+  <section class="section" id="horaires" aria-labelledby="horaires-titre">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Horaires &amp; accès</span>
+        <h2 id="horaires-titre">Quand nous <em>ouvrons</em></h2>
+      </div>
+
+      <div class="hours-grid">
+        <ul class="hours-list" aria-label="Horaires d'ouverture">
+          <li><span class="day">Mardi – Vendredi</span><span class="time">12h00 – 14h00&nbsp;&nbsp;·&nbsp;&nbsp;19h00 – 22h30</span></li>
+          <li><span class="day">Samedi</span><span class="time">19h00 – 23h00</span></li>
+          <li><span class="day">Dimanche</span><span class="time closed">Fermé</span></li>
+          <li><span class="day">Lundi</span><span class="time closed">Fermé</span></li>
+        </ul>
+
+        <div class="info-card">
+          <h3>Nous trouver</h3>
+          <address>
+            <strong style="color:var(--bone); font-weight:600;">Table du Vallon</strong><br>
+            Chemin du Vallon 12<br>
+            1096 Cully · Vaud, Suisse
+
+            <span class="label">Réservations</span>
+            <a href="tel:+41210000000">+41 21 000 00 00</a><br>
+            <a href="mailto:reservation@tableduvallon.example">reservation@tableduvallon.example</a>
+
+            <span class="label">Accès</span>
+            À 4 minutes à pied de la gare de Cully (ligne Lausanne–Vevey). Parking public de la Gare à 150 mètres.
+          </address>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ RÉSERVATION ============================ -->
+  <section class="section" id="reservation" aria-labelledby="resa-titre">
+    <div class="wrap">
+      <div class="resa-grid">
+        <div class="resa-copy">
+          <span class="eyebrow">Réservation</span>
+          <h2 id="resa-titre" style="font-size:clamp(2.1rem,1.6rem + 2.4vw,3.4rem); margin:1rem 0 0;">Réserver une <em style="font-style:italic;color:var(--copper)">table</em></h2>
+          <p class="lead">Nous confirmons chaque demande par téléphone dans la journée. Pour les tables de six et plus, ou pour la privatisation de la salle, appelez-nous directement.</p>
+          <span class="resa-badge"><span class="dot" aria-hidden="true"></span> Réponse le jour même · un seul service par soir</span>
+        </div>
+
+        <!-- Formulaire de démonstration : non fonctionnel -->
+        <form class="resa" aria-labelledby="resa-form-titre" novalidate>
+          <h3 id="resa-form-titre" style="font-family:var(--serif); font-size:1.3rem; margin:0 0 1.4rem;">Votre demande</h3>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="r-date">Date <span class="req" aria-hidden="true">*</span></label>
+              <input type="date" id="r-date" name="date" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="r-heure">Heure <span class="req" aria-hidden="true">*</span></label>
+              <select id="r-heure" name="heure">
+                <option value="">Choisir…</option>
+                <option>12h00</option><option>12h30</option><option>13h00</option>
+                <option>19h00</option><option>19h30</option><option>20h00</option>
+                <option>20h30</option><option>21h00</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="r-couverts">Nombre de couverts <span class="req" aria-hidden="true">*</span></label>
+              <select id="r-couverts" name="couverts">
+                <option value="">Choisir…</option>
+                <option>1 personne</option><option>2 personnes</option>
+                <option>3 personnes</option><option>4 personnes</option>
+                <option>5 personnes</option><option>6 personnes et plus</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="r-nom">Nom <span class="req" aria-hidden="true">*</span></label>
+              <input type="text" id="r-nom" name="nom" placeholder="Votre nom" autocomplete="name">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="r-email">Courriel <span class="req" aria-hidden="true">*</span></label>
+              <input type="email" id="r-email" name="email" placeholder="vous@exemple.ch" autocomplete="email">
+            </div>
+            <div class="field">
+              <label for="r-tel">Téléphone <span class="req" aria-hidden="true">*</span></label>
+              <input type="tel" id="r-tel" name="telephone" placeholder="+41 …" autocomplete="tel">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="r-msg">Une précision ? (allergies, occasion…)</label>
+            <textarea id="r-msg" name="message" placeholder="Ce qu'il nous faut savoir avant votre venue."></textarea>
+          </div>
+
+          <div class="resa-submit">
+            <button type="button" class="btn btn-solid" aria-describedby="resa-demo">Envoyer la demande</button>
+            <span class="resa-note" id="resa-demo">Formulaire de démonstration — aucune donnée n'est envoyée.</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- divider ornement -->
+  <div class="wrap" style="padding-block:1rem">
+    <div class="ornament" aria-hidden="true">
+      <svg viewBox="0 0 64 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 4 v9 M8 4 v5 M16 4 v5 M8 9 h8 M12 13 v5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        <circle cx="32" cy="11" r="5" stroke="currentColor" stroke-width="1"/>
+        <circle cx="32" cy="11" r="1.5" fill="currentColor"/>
+        <path d="M52 4 c6 4 6 10 0 14 M52 4 v14" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ============================ MENTIONS LÉGALES ============================ -->
+  <section id="mentions" aria-labelledby="mentions-titre">
+    <div class="wrap">
+      <p class="disclaimer">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l9 16H3L12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="16.6" r="1" fill="currentColor"/></svg>
+        <span><strong>Site de démonstration fictif réalisé par Wahl BI Consulting</strong> — ne correspond à aucune entreprise réelle. Établissement, adresse, coordonnées, tarifs et témoignages sont illustratifs et inventés à des fins de présentation.</span>
+      </p>
+
+      <h2 id="mentions-titre" style="font-size:1.4rem; margin:0 0 1.5rem;">Mentions légales</h2>
+
+      <div class="legal-cols">
+        <div>
+          <h3>Éditeur</h3>
+          <p>
+            Table du Vallon Sàrl <em>(raison sociale fictive)</em><br>
+            Chemin du Vallon 12<br>
+            1096 Cully · Suisse<br>
+            IDE : CHE-000.000.000 <em>(fictif)</em>
+          </p>
+        </div>
+        <div>
+          <h3>Contact</h3>
+          <p>
+            <a href="tel:+41210000000">+41 21 000 00 00</a><br>
+            <a href="mailto:contact@tableduvallon.example">contact@tableduvallon.example</a><br>
+            Direction de la publication : la gérance.
+          </p>
+        </div>
+        <div>
+          <h3>Hébergement</h3>
+          <p>
+            Hébergeur générique<br>
+            Centre de données situé en Suisse<br>
+            Coordonnées communiquées sur demande.
+          </p>
+        </div>
+        <div>
+          <h3>Données &amp; propriété</h3>
+          <p>
+            Aucune donnée n'est collectée via ce site de démonstration. Textes, illustrations et code sont la propriété de Wahl BI Consulting.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ FOOTER ============================ -->
+  <footer class="site-foot">
+    <div class="wrap">
+      <div class="foot-grid">
+        <div class="foot-brand"><span class="mark">◍</span> Table du <em style="font-style:italic; color:var(--bone-dim)">Vallon</em></div>
+        <p class="credit">
+          Démonstration réalisée par
+          <a href="https://wahl-bi-consulting.ch" target="_blank" rel="noopener noreferrer">Wahl BI Consulting</a>
+        </p>
+      </div>
+      <p class="foot-copy">
+        Ce site est une maquette fictive, sans lien avec un établissement existant. Créée pour illustrer le savoir-faire de Wahl BI Consulting en matière de sites vitrines pour la restauration.
+      </p>
+    </div>
+  </footer>
+
+</main>
+</body>
+</html>
